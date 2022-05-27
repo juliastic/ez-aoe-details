@@ -141,6 +141,28 @@ class UnitType(Action):
     MONK = 'Monk'
     SIEGE = 'Siege'
 
+class Filter():
+    NONE = 0
+    AVG_VIL = 1
+    AVG_MIL = 2
+    TECHNOLOGIES = 3
+    AVG_MIL_BUILDINGS = 4
+    AVG_ECO_BUILDINGS = 5
+    EAPM = 6
+
+class FilterType():
+    BUILDINGS = 'buildings'
+    UNITS = 'units'
+    EAPM = 'eapm'
+    TECHNOLOGIES = 'technologies'
+    GAMEDURATION = 'gameduration'
+    ACTION_COORDINATES = 'action_coordinates'
+class SkillLevel():
+    PRO = 'pro' # ELO > 2200
+    HIGH = 'high' # ELO > 1800
+    MIDDLE = 'middle' # ELO > 1000
+    LOW = 'low' # ELO <= 1000
+
 UNIT_IDS = {
     MainType.ECO: {
         83: Unit.VILLAGER
