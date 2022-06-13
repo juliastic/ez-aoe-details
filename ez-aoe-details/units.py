@@ -12,16 +12,32 @@ class Unit(Action):
 
     ARCHER = 'Archer'
     SKIRMISHER = 'Skirmisher'
+    LONGBOWMAN = 'Longbowman'
     CAVALRY_ARCHER = 'Cavalry Archery'
+    PLUMED_ARCHER = 'Plumed Archer'
+    CHU_KO_NU = 'Chu Ko Nu'
 
     KNIGHT = 'Knight'
     SCOUT = 'Scout'
     CAMEL = 'Camel'
+    CAMEL_SCOUT = 'Camel Scout'
     BATTLE_ELEPHANT = 'Battle Elephant'
+    LEITIS = 'Leitis'
+    STEPPE_LANCER = 'Steppe Lancer'
+    CATAPHRACT = 'Cataphract'
+    COUSTILLIER = 'Coustillier'
 
     EAGLE = 'Eagle'
     MILITIA = 'Militia'
     SPEARMAN = 'Spearman'
+    URUMI = 'Urumi'
+    TEUTONIC_KNIGHT = 'Teutonic Knight'
+    GBETO = 'Gbeto'
+    SHOTEL_WARRIOR = 'Shotel Warrior'
+    HUSKARL = 'Huskarl'
+    GHULAM = 'Ghulam'
+    CHAKRAM_THROWER = 'Chakram Thrower'
+    OBUCH = 'Obuch'
 
     MONK = 'Monk'
 
@@ -29,12 +45,18 @@ class Unit(Action):
     ORGAN_GUN = 'Organ Gun'
     BATTERING_RAM = 'Battering Ram'
     TREBUCHET = 'Trebuchet'
+    SCORPION = 'Scorpion'
+    SIEGE_ELEPHANT = 'Siege Elephant'
+    BOMBARD_CANNON = 'Bombard Cannon'
 
 class Building(Action):
     DOCK = 'Dock'
     MILL = 'Mill'
     MARKET = 'Market'
     TOWN_CENTER = 'Town Center'
+    MINE = 'Mine'
+    LUMBERCAMP = 'Lumber Camp'
+    FOLWARK = 'Folwark'
 
     ARCHERY = 'Archery'
     STABLE = 'Stable'
@@ -45,6 +67,8 @@ class Building(Action):
     MONASTERY = 'Monastery'
 
     WATCH_TOWER = 'Watch Tower'
+
+    WALL = 'Wall'
 
 #todo: dock and unique units ... and unique techs and university techs etc
 class Technology(Action):
@@ -141,22 +165,16 @@ class UnitType(Action):
     MONK = 'Monk'
     SIEGE = 'Siege'
 
-class Filter():
-    NONE = 0
-    AVG_VIL = 1
-    AVG_MIL = 2
-    TECHNOLOGIES = 3
-    AVG_MIL_BUILDINGS = 4
-    AVG_ECO_BUILDINGS = 5
-    EAPM = 6
-
+class BuildingType(Action):
+    WALL = 'Wall'
 class FilterType():
     BUILDINGS = 'buildings'
     UNITS = 'units'
     EAPM = 'eapm'
     TECHNOLOGIES = 'technologies'
     GAMEDURATION = 'gameduration'
-    ACTION_COORDINATES = 'action_coordinates'
+    ACTION_MOVE_COORDINATES = 'action_move_coordinates'
+    ACTION_UNIT_COORDINATES = 'action_unit_coordinates'
 class SkillLevel():
     PRO = 'pro' # ELO > 2200
     HIGH = 'high' # ELO > 1800
@@ -168,29 +186,48 @@ UNIT_IDS = {
         83: Unit.VILLAGER
     },
     UnitType.INF: {
+        25: Unit.TEUTONIC_KNIGHT,
+        41: Unit.HUSKARL,
         74: Unit.MILITIA,
         93: Unit.SPEARMAN,
         751: Unit.EAGLE,
+        1013: Unit.GBETO,
+        1016: Unit.SHOTEL_WARRIOR,
+        1701: Unit.OBUCH,
+        1735: Unit.URUMI,
+        1741: Unit.CHAKRAM_THROWER,
+        1747: Unit.GHULAM,
     },  
     UnitType.CAV: {
         38: Unit.KNIGHT,
+        40: Unit.CATAPHRACT,
         448: Unit.SCOUT,
         329: Unit.CAMEL,
         1132: Unit.BATTLE_ELEPHANT,
+        1234: Unit.LEITIS,
+        1370: Unit.STEPPE_LANCER,
+        1655: Unit.COUSTILLIER,
+        1755: Unit.CAMEL_SCOUT,
     },
     UnitType.ARCH: {
         4: Unit.ARCHER,
         7: Unit.SKIRMISHER,
+        8: Unit.LONGBOWMAN,
         39: Unit.CAVALRY_ARCHER,
+        45: Unit.CHU_KO_NU,
+        763: Unit.PLUMED_ARCHER,
     },
     UnitType.MONK: {
         125: Unit.MONK,
     },
     UnitType.SIEGE: {
+        36: Unit.BOMBARD_CANNON,
+        279: Unit.SCORPION,
         280: Unit.MANGONEL,
+        331: Unit.TREBUCHET,
         1001: Unit.ORGAN_GUN,
         1258: Unit.BATTERING_RAM,
-        42: Unit.TREBUCHET,
+        1744: Unit.SIEGE_ELEPHANT,
     }
 }
 
@@ -200,15 +237,21 @@ BUILDING_IDS = {
         68: Building.MILL,
         84: Building.MARKET,
         109: Building.TOWN_CENTER,
+        584: Building.MINE,
+        562: Building.LUMBERCAMP,
+        1734: Building.FOLWARK,
     },
     MainType.MIL: {
         10: Building.ARCHERY,
         12: Building.BARRACKS,
         49: Building.SIEGE_WORKSHOP,
         82: Building.CASTLE,
-        101: Building.STABLE,
         79: Building.WATCH_TOWER,
+        101: Building.STABLE,
         104: Building.MONASTERY,
+    },
+    BuildingType.WALL: {
+        72: Building.WALL
     }
 }
 
@@ -270,7 +313,7 @@ TECHNOLOGY_IDS = {
         # University Technologies
         93: Technology.BALLISTICS,
 
-        # Barrack Technologies
+        # Barracks Technologies
         602: Technology.ARSON,
         716: Technology.SUPPLIES,
         215: Technology.SQUIRES,

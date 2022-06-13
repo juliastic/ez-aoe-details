@@ -5,13 +5,15 @@ import time
 import typing
 from pathlib import Path
 from mgz import header, fast
+from mgz.summary.objects import TC_IDS
 from datetime import datetime
 from player import Player
-from units import Filter, MainType, SkillLevel, FilterType, TECHNOLOGY_IDS, UNIT_IDS
-from mgz.summary.objects import TC_IDS
-from visualisation import AoELineGraph
+from units import MainType, SkillLevel, FilterType, TECHNOLOGY_IDS, UNIT_IDS, BuildingType
+from visualisation import AoEGraphs
 
 class Analysis():
+    """This class holds all the relevant information for a specific replay. It also contains instances of player.Player to hold player specific information. It relies on mgz.fast for parsing the replay file data.
+    """
     def __init__(self, replayfile: str):
         self.replayfile = replayfile
         self.time = 0
@@ -19,20 +21,25 @@ class Analysis():
         self.summary_players = []
         self.added_timestamps = []
         self.map_dimensions = 0
-    
-    def output_time(self) -> str:
-        seconds = math.floor((self.time / 1000) % 60)
-        minutes = math.floor((self.time / (1000 * 60)))
-        return str(minutes).zfill(2) + ':' + str(seconds).zfill(2)
 
     def find_player(self, player_id: int) -> Player:
+        """Finds a player given a specific id
+
+        Args:
+            player_id (int): player id
+
+        Returns:
+            Player: the player object associated with the player id
+        """
         return self.players[player_id]
 
     def start_analysis(self) -> None:
-        # consider retrieving starting position of player and calculate something????
+        """This function invokes the analysis of the given replay data. The game data is iterated over and parsed accordingly.
+        """
         start = time.time()
         print("Parsing Data ...")
         with open(self.replayfile, 'rb') as data:
+            # parse game metadata
             eof = os.fstat(data.fileno()).st_size
             _header = header.parse_stream(data)
             self.map_dimensions = _header.map_info.size_x # map size
@@ -46,7 +53,8 @@ class Analysis():
                 if player_id not in self.players and player_id > 0: # in case of nomad: starting position will be set later
                     self.players[player_id] = Player(player_id)
             fast.meta(data)
-            #todo: track scouting? maybe track activity on map for the entire game? save with move????
+
+            # parse game data
             while data.tell() < eof:
                 operation = fast.operation(data)
                 if operation[0] == fast.Operation.ACTION:
@@ -61,19 +69,15 @@ class Analysis():
                         technology_id = details['technology_id']
                         seconds = math.floor((self.time / 1000))
                         self.get_and_prepare_player(player_id, details).add_technology(technology_id, seconds)
-                    elif action == fast.Action.BUILD:
+                    elif action == fast.Action.BUILD or action == fast.Action.WALL:
                         player_id = details['player_id']
                         building_id = details['building_id']
                         player = self.get_and_prepare_player(player_id, details)
                         if building_id in TC_IDS and player.get_starting_position() == (0, 0):
                             player.set_starting_position((details['x'], details['y']))
                         player.add_building(building_id)
-                    elif action == fast.Action.GATHER_POINT:
-                        pass #maybe add this?
-                    elif action == fast.Action.RESIGN:
-                        pass
-                    elif action == fast.Action.TOWN_BELL or action == fast.Action.PATROL or action == fast.Action.FORMATION or action == fast.Action.DE_ATTACK_MOVE or action == fast.Action.MOVE:
-                        self.get_and_prepare_player(player_id, details)
+                    elif action == fast.Action.TOWN_BELL or action == fast.Action.PATROL or action == fast.Action.FORMATION or action == fast.Action.DE_ATTACK_MOVE or action == fast.Action.MOVE or action == fast.Action.ATTACK_GROUND:
+                        self.get_and_prepare_player(player_id, details, action)
                 elif operation[0] == fast.Operation.SYNC:
                     self.time += operation[1][0]
                     minutes = math.floor((self.time / (1000 * 60)))
@@ -87,12 +91,12 @@ class Analysis():
 
             print(f'Parsed file {self.replayfile} in {time.time() - start} seconds')
 
-    def get_and_prepare_player(self, player_id: int, details: typing.Dict[str, any]) -> Player:
+    def get_and_prepare_player(self, player_id: int, details: typing.Dict[str, any], action: fast.Action = -1) -> Player:
         player = self.find_player(player_id)
         player.increase_eAPM()
         if 'x' in details and 'y' in details:
             # calculate with starting position of player -> differrence -> final result: relative to map size -> %
-            player.add_action({'x': details['x'], 'y': details['y']})
+            player.add_action({'x': details['x'], 'y': details['y'], 'timestamp': self.get_gameduration() * 60, 'action': action})
         return player
 
     def get_players(self) -> typing.Dict[int, Player]:
@@ -108,7 +112,7 @@ class Analysis():
         header = ['player']
         for key, entries in list.items():
             header.append(key)
-            for _, entry in entries.items():
+            for entry in entries.values():
                 header.append(entry)
         return header
 
@@ -174,6 +178,8 @@ class Analysis():
                 writer.writerow(header)
             writer.writerows(rows)
 class MultipleAnalyses():
+    """This class contains all Analysis instances for a specific SkillLevel. Additionally, it relies on visualisation.AoEGraphs to visualise the results, as well as on helper classes from units.* to not rely on hardcoded values.
+    """
     def __init__(self, paths_to_segmented_replayfiles: typing.Dict[SkillLevel, str]):
         self.analyses = {k: [] for k in paths_to_segmented_replayfiles}
 
@@ -188,10 +194,13 @@ class MultipleAnalyses():
 
         self.results = {k: [] for k in self.analyses}
         self.average_timestamp_results = {k: {} for k in self.analyses}
-        self.average_results = {FilterType.EAPM: {}, FilterType.TECHNOLOGIES: {k: {MainType.ECO: {}, MainType.MIL: {}} for k in self.analyses}, FilterType.GAMEDURATION: {}, FilterType.ACTION_COORDINATES: {k: {'x': 0, 'y': 0} for k in self.analyses}}
+        self.average_results = {FilterType.EAPM: {}, FilterType.TECHNOLOGIES: {k: {MainType.ECO: {}, MainType.MIL: {}} for k in self.analyses}, FilterType.GAMEDURATION: {}, FilterType.ACTION_UNIT_COORDINATES: {k: {'x': 0, 'y': 0} for k in self.analyses}, FilterType.ACTION_MOVE_COORDINATES: {k: {'x': 0, 'y': 0} for k in self.analyses}}
 
     def start_analyses(self) -> None:
+        """Starts all game analyses, also invokes compute_average_results()
+        """
         [analysis.start_analysis() for analysis in self.combined_analyses]
+        # calculate average game duration for skill level
         for type, analyses_for_type in self.analyses.items():
             total_gameduration = 0
             for analysis in analyses_for_type:
@@ -206,53 +215,82 @@ class MultipleAnalyses():
         [self.compute_average_results_for_type(type, players) for type, players in self.results.items()]
 
     def compute_average_results_for_type(self, type: str, players: list[Player]) -> None:
+        """Computes the average results for all players of a certain type
+
+        Args:
+            type (str): skill level type
+            players (list[Player]): list holding all players
+        """
         values_for_timestamps_type_avg = self.average_timestamp_results[type]
         total_eAPM = 0
-        average_action_coordinates = self.average_results[FilterType.ACTION_COORDINATES][type]
+        average_action_move_coordinates = self.average_results[FilterType.ACTION_MOVE_COORDINATES][type]
+        average_action_unit_coordinates = self.average_results[FilterType.ACTION_UNIT_COORDINATES][type]
         average_technologies = self.average_results[FilterType.TECHNOLOGIES][type]
         for player in players:
             total_eAPM += player.get_average_eAPM()
+            # calculate average units and buildings for timestamps
             for timestamp, values in player.get_state_for_timestamps().items():
                 values_for_timestamp = values_for_timestamps_type_avg.setdefault(timestamp, {
                     FilterType.UNITS: {MainType.ECO: 0, MainType.MIL: 0}, 
-                    FilterType.BUILDINGS: {MainType.ECO: 0, MainType.MIL: 0}, 
+                    FilterType.BUILDINGS: {MainType.ECO: 0, MainType.MIL: 0, BuildingType.WALL: 0},
+                    FilterType.ACTION_MOVE_COORDINATES: {'x': 0, 'y': 0, 'count': 0},
+                    FilterType.ACTION_UNIT_COORDINATES: {'x': 0, 'y': 0, 'count': 0},
                     'count': 0})
                 for key, value in values.items():
-                    values_for_timestamp[key][MainType.ECO] += value[MainType.ECO]
-                    values_for_timestamp[key][MainType.MIL] += value[MainType.MIL]
+                    for value_key in value.keys():
+                        values_for_timestamp[key][value_key] += value[value_key]
                 values_for_timestamp['count'] += 1
+            # calculate average technology research time
             for main_type, technologies in player.get_technologies().items():
                 average_technologies_for_type = average_technologies[main_type]
                 for technology, timestamp in technologies.items():
                     average_technology = average_technologies_for_type.setdefault(technology, {'timestamp': 0, 'count': 0})
                     average_technology['timestamp'] += timestamp
                     average_technology['count'] += 1
-            action_coordinates = player.get_average_action_coordinates()
-            average_action_coordinates['x'] += action_coordinates[0]
-            average_action_coordinates['y'] += action_coordinates[1]
+            # add coordinates
+            action_coordinates = player.get_average_move_action_coordinates()
+            average_action_move_coordinates['x'] += action_coordinates[0]
+            average_action_move_coordinates['y'] += action_coordinates[1]
 
-        average_action_coordinates['x'] /= len(players)
-        average_action_coordinates['y'] /= len(players)
+            action_unit_coordinates = player.get_average_unit_coordinates()
+            average_action_unit_coordinates['x'] += action_unit_coordinates[0]
+            average_action_unit_coordinates['y'] += action_unit_coordinates[1]
 
-        self.average_results[FilterType.EAPM][type] = total_eAPM / len(players)
+        # average coordinate and eAPM values based on player count
+        player_count = len(players)
+        average_action_move_coordinates['x'] /= player_count
+        average_action_move_coordinates['y'] /= player_count
 
+        average_action_unit_coordinates['x'] /= player_count
+        average_action_unit_coordinates['y'] /= player_count
+
+        self.average_results[FilterType.EAPM][type] = total_eAPM / player_count
+
+        # average technology, military and eco values based on frequency of timestamp 
         for main_type, technologies in average_technologies.items():
             for technology, values in technologies.items():
                 average_technologies[main_type][technology] = values['timestamp'] / values['count']
-
         for timestamp, results in values_for_timestamps_type_avg.items():
             count = results['count']
-            for key, value in results.items():
+            for value in results.values():
                 if isinstance(value, dict):
-                    value[MainType.ECO] = value[MainType.ECO] / count
-                    value[MainType.MIL] = value[MainType.MIL] / count
+                    if MainType.ECO in value:
+                        for key in value.keys():
+                            value[key] /= count
+                    elif 'x' in value:
+                        value['x'] /= count
+                        value['y'] /= count
             results.pop('count', None)
 
     def output_results(self) -> None:
-        visualisation = AoELineGraph(self.average_timestamp_results, self.average_results)
+        """This invokes an visualisation.AoEGraphs instance to visualise the analaysis results.
+        """
+        visualisation = AoEGraphs(self.average_timestamp_results, self.average_results)
         visualisation.output_results()
 
     def create_analyses_report(self) -> None:
+        """This invokes Analysis.create_analysis_report() for all stored analysis isntances
+        """
         [analysis.create_analysis_report() for analysis in self.combined_analyses]
 
 if __name__ == '__main__':

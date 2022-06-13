@@ -16,7 +16,8 @@ Currently supported:
 ## Installation
 * `pip3 install pandas`
 * `pip3 install matplotlib`
-* `pip3 install git+https://github.com/happyleavesaoc/aoc-mgz.git`
+* `pip3 install adjustText`
+* `pip3 install git+https://github.com/happyleavesaoc/aoc-mgz.git@fix-fast`
 
 ## Execution
 `python3 ez-aoe-details/analysis.py`
