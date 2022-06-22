@@ -92,6 +92,16 @@ class Analysis():
             print(f'Parsed file {self.replayfile} in {time.time() - start} seconds')
 
     def get_and_prepare_player(self, player_id: int, details: typing.Dict[str, any], action: fast.Action = -1) -> Player:
+        """Gets a player based on the id, increases the action count and adds an action given x and y coordinates are given.
+
+        Args:
+            player_id (int): player id
+            details (typing.Dict[str, any]): details of replay step
+            action (fast.Action, optional): action type. Defaults to -1.
+
+        Returns:
+            Player: _description_
+        """
         player = self.find_player(player_id)
         player.increase_eAPM()
         if 'x' in details and 'y' in details:
@@ -108,15 +118,27 @@ class Analysis():
     def get_gameduration(self) -> int:
         return math.ceil((self.time / (1000 * 60)))
 
-    def create_header_with_types(self, list: list) -> list[str]:
+    # THE CODE BELOW FOCUSES ON CSV GENERATION AND IS NOT RELEVANT FOR THE PROJECT
+
+    def create_header_with_types(self, dict: dict[str, dict[str, str]]) -> list[str]:
+        """Creates a CSV header containing all the keys and entries of a given dict
+
+        Args:
+            dict (dict[str, dict[str, str]]): dict containing relevant information, e.g. {MainType.ECO: {101: Technology.FEUDAL_AGE}
+
+        Returns:
+            list[str]: merged header containg relevant header
+        """
         header = ['player']
-        for key, entries in list.items():
+        for key, entries in dict.items():
             header.append(key)
             for entry in entries.values():
                 header.append(entry)
         return header
 
     def create_analysis_report(self) -> None:
+        """Creates an analysis report aka CSV files containing technology research time, unit counts, villager timestamps and military unit timestamps.
+        """
         header_units = self.create_header_with_types(UNIT_IDS)
         header_technologies = self.create_header_with_types(TECHNOLOGY_IDS)
         header_unit_timestamps = ['timestamp']
@@ -168,7 +190,15 @@ class Analysis():
             for entry, value in entries.items():
                 row[entry] = value
 
-    def create_csv_file(self, filename, header: list[str], rows: list[str], use_dict_writer=True) -> None:
+    def create_csv_file(self, filename, header: list[str], rows: list[list[str]], use_dict_writer=True) -> None:
+        """Helper method, generates a CSV file given the parameters.
+
+        Args:
+            filename (_type_): the file name of the CSV file
+            header (list[str]): the header of the file
+            rows (list[list[str]]): the rows of the file
+            use_dict_writer (bool, optional): whether dict writer should be used or not (header == row keys). Defaults to True.
+        """
         with open(filename, 'w', encoding='UTF8', newline='') as file:
             if use_dict_writer:
                 writer = csv.DictWriter(file, fieldnames=header,restval=0)
@@ -212,6 +242,8 @@ class MultipleAnalyses():
         self.compute_average_results()
     
     def compute_average_results(self) -> None:
+        """Invokes compute_average_results_for_type results for all different types (Skill Levels)
+        """
         [self.compute_average_results_for_type(type, players) for type, players in self.results.items()]
 
     def compute_average_results_for_type(self, type: str, players: list[Player]) -> None:

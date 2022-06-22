@@ -33,7 +33,7 @@ class Player:
         return self.units
     
     def add_unit(self, unit: int) -> None:
-        """Adds a queued unit id to the corresponding unit id count.
+        """Adds a queued unit id to the corresponding unit id count
 
         Args:
             unit (int): unit id
@@ -46,6 +46,7 @@ class Player:
 
     def calculate_state_for_timestamp(self, timestamp: int):
         """Calculates all relevant information, i.e. military buildings and player actions, for a specific timestamp. The values are added to a dictionary holding all timestamp results.
+        See get_state_for_timestamp(self) for an overview regarding the added value.
 
         Args:
             timestamp (int): the relevant timestamp 
@@ -91,7 +92,7 @@ class Player:
             FilterType.ACTION_UNIT_COORDINATES: action_unit_coordinates}
 
     def get_state_for_timestamps(self) -> typing.Dict[int, typing.Dict[FilterType, typing.Dict[MainType, int]]]:
-        """Gets the state for all timestamps
+        """Gets the state for all timestamps, e.g. {0: {FilterType.UNITS: {MainType.ECO: 0, MainType.MIL: 0}, FilterType.BUILDINGS: {MainType.ECO: 0, MainType.MIL: 0}, FilterType.ACTION_MOVE_COORDINATES: {'x': 0, 'y': 0, count: 0}, FilterType.ACTION_UNIT_COORDINATES: {'x': 0, 'y': 0, count: 0}}}
 
         Returns:
             typing.Dict[int, typing.Dict[FilterType, typing.Dict[MainType, int]]]: state for all timestamps
@@ -190,7 +191,7 @@ class Player:
         return self.get_average_coordinates(filtered_actions)
 
     def get_average_coordinates(self, actions: list[typing.Dict[str, any]]) -> typing.Tuple[float, float]:
-        """Gets the average coordinates for all actions
+        """Gets the average coordinates for all actions passed as parameter
 
         Args:
             actions (list[typing.Dict[str, any]]): the action containing x and y coordinates
