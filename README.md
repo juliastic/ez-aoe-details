@@ -10,7 +10,7 @@ It also generates CSV files for each replay file calculated for each player. Thi
 
 The replays are added to `ez-aoe-details/replays`. The current replays have been taken from aoe2.net and all feature games played as 1v1 on Arabia. Graphs generated with the given replay files can be found in `ez-aoe-details/graphs`.
 
-It aims at understanding how player behaviour varies based on skill level, for me a more thourough explanation, see [the project Summary](./SUMMARY.MD).
+It aims at understanding how player behaviour varies based on skill level, for me a more thourough explanation, see [the project Summary](SUMMARY.md).
 
 ### Supported Visualisations
 * average eAPM
