@@ -81,6 +81,7 @@ class Analysis():
                 elif operation[0] == fast.Operation.SYNC:
                     self.time += operation[1][0]
                     minutes = math.floor((self.time / (1000 * 60)))
+                    # update player values every two min
                     if minutes not in self.added_timestamps and minutes % 2 == 0:
                         seconds = minutes * 60
                         self.added_timestamps.append(minutes)
@@ -100,7 +101,7 @@ class Analysis():
             action (fast.Action, optional): action type. Defaults to -1.
 
         Returns:
-            Player: _description_
+            Player: the player
         """
         player = self.find_player(player_id)
         player.increase_eAPM()
@@ -118,7 +119,7 @@ class Analysis():
     def get_gameduration(self) -> int:
         return math.ceil((self.time / (1000 * 60)))
 
-    # THE CODE BELOW FOCUSES ON CSV GENERATION AND IS NOT RELEVANT FOR THE PROJECT
+    # THE CODE BELOW FOCUSES ON CSV GENERATION
 
     def create_header_with_types(self, dict: dict[str, dict[str, str]]) -> list[str]:
         """Creates a CSV header containing all the keys and entries of a given dict
@@ -207,8 +208,9 @@ class Analysis():
                 writer = csv.writer(file)
                 writer.writerow(header)
             writer.writerows(rows)
+
 class MultipleAnalyses():
-    """This class contains all Analysis instances for a specific SkillLevel. Additionally, it relies on visualisation.AoEGraphs to visualise the results, as well as on helper classes from units.* to not rely on hardcoded values.
+    """This class contains all Analysis instances for a specific unit.SkillLevel. Additionally, it relies on visualisation.AoEGraphs to visualise the results, as well as on helper classes from units.* to not rely on hardcoded values.
     """
     def __init__(self, paths_to_segmented_replayfiles: typing.Dict[SkillLevel, str]):
         self.analyses = {k: [] for k in paths_to_segmented_replayfiles}
@@ -258,6 +260,7 @@ class MultipleAnalyses():
         average_action_move_coordinates = self.average_results[FilterType.ACTION_MOVE_COORDINATES][type]
         average_action_unit_coordinates = self.average_results[FilterType.ACTION_UNIT_COORDINATES][type]
         average_technologies = self.average_results[FilterType.TECHNOLOGIES][type]
+
         for player in players:
             total_eAPM += player.get_average_eAPM()
             # calculate average units and buildings for timestamps
@@ -287,7 +290,7 @@ class MultipleAnalyses():
             action_unit_coordinates = player.get_average_unit_coordinates()
             average_action_unit_coordinates['x'] += action_unit_coordinates[0]
             average_action_unit_coordinates['y'] += action_unit_coordinates[1]
-
+        
         # average coordinate and eAPM values based on player count
         player_count = len(players)
         average_action_move_coordinates['x'] /= player_count

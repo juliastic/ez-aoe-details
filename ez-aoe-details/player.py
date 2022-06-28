@@ -43,6 +43,7 @@ class Player:
                 unit = units[unit]
                 self.units[type][unit] = self.units[type].get(unit, 0) + 1
                 return
+        print(f'unknown unit id: {unit}')
 
     def calculate_state_for_timestamp(self, timestamp: int):
         """Calculates all relevant information, i.e. military buildings and player actions, for a specific timestamp. The values are added to a dictionary holding all timestamp results.

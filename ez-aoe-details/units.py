@@ -16,6 +16,10 @@ class Unit(Action):
     CAVALRY_ARCHER = 'Cavalry Archery'
     PLUMED_ARCHER = 'Plumed Archer'
     CHU_KO_NU = 'Chu Ko Nu'
+    HAND_CANNONEER = 'Hand Cannoneer'
+    WAR_WAGON = 'War Wagon'
+    ELEPHANT_ARCHER = 'Elephant Archer'
+    RATTAN_ARCHER = 'Rattan Archer'
 
     KNIGHT = 'Knight'
     SCOUT = 'Scout'
@@ -26,6 +30,7 @@ class Unit(Action):
     STEPPE_LANCER = 'Steppe Lancer'
     CATAPHRACT = 'Cataphract'
     COUSTILLIER = 'Coustillier'
+    MAGYAR_HUSZAR = 'Magyar Huszar'
 
     EAGLE = 'Eagle'
     MILITIA = 'Militia'
@@ -38,6 +43,8 @@ class Unit(Action):
     GHULAM = 'Ghulam'
     CHAKRAM_THROWER = 'Chakram Thrower'
     OBUCH = 'Obuch'
+    SAMURAI = 'Samurai'
+    BERSERK = 'Berserk'
 
     MONK = 'Monk'
 
@@ -190,6 +197,8 @@ UNIT_IDS = {
         41: Unit.HUSKARL,
         74: Unit.MILITIA,
         93: Unit.SPEARMAN,
+        291: Unit.SAMURAI,
+        692: Unit.BERSERK,
         751: Unit.EAGLE,
         1013: Unit.GBETO,
         1016: Unit.SHOTEL_WARRIOR,
@@ -203,6 +212,7 @@ UNIT_IDS = {
         40: Unit.CATAPHRACT,
         448: Unit.SCOUT,
         329: Unit.CAMEL,
+        869: Unit.MAGYAR_HUSZAR,
         1132: Unit.BATTLE_ELEPHANT,
         1234: Unit.LEITIS,
         1370: Unit.STEPPE_LANCER,
@@ -211,11 +221,15 @@ UNIT_IDS = {
     },
     UnitType.ARCH: {
         4: Unit.ARCHER,
+        5: Unit.HAND_CANNONEER,
         7: Unit.SKIRMISHER,
         8: Unit.LONGBOWMAN,
         39: Unit.CAVALRY_ARCHER,
         45: Unit.CHU_KO_NU,
         763: Unit.PLUMED_ARCHER,
+        827: Unit.WAR_WAGON,
+        873: Unit.ELEPHANT_ARCHER,
+        1129: Unit.RATTAN_ARCHER,
     },
     UnitType.MONK: {
         125: Unit.MONK,
