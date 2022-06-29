@@ -210,7 +210,7 @@ class Analysis():
             writer.writerows(rows)
 
 class MultipleAnalyses():
-    """This class contains all Analysis instances for a specific unit.SkillLevel. Additionally, it relies on visualisation.AoEGraphs to visualise the results, as well as on helper classes from units.* to not rely on hardcoded values.
+    """This class contains all Analysis instances segmented for each specific unit.SkillLevel. Additionally, it relies on visualisation.AoEGraphs to visualise the results, as well as on helper classes from units.* to not rely on hardcoded values.
     """
     def __init__(self, paths_to_segmented_replayfiles: typing.Dict[SkillLevel, str]):
         self.analyses = {k: [] for k in paths_to_segmented_replayfiles}
