@@ -12,16 +12,24 @@ The replays are added to `ez-aoe-details/replays`. The current replays have been
 
 It aims at understanding how player behaviour varies based on skill level, for me a more thourough explanation, see [the project Summary](SUMMARY.md).
 
+## Data Structure
+Data is passed as dictionary through the different classes. All player relevant data is stored in a `player.Player` instance. The players are hold in their respecitve `analysis.Analysis` classes which are again part of `analysis.MultipleAnalyses`  There, the relevant data for every timestamp is calculated and stored, e.g. `{0: {'units': {Economy: 0, Military: 0}, 'buildings: {Economy: 0, Military: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}}}`
+
+After all analyses have been concluded, the data from all players from the same skill levels are averaged and a dictionary with relevant calculations is created, e.g. ` {'low': {120: {'units': {Economy: 4.8, Military: 0.05}, 'buildings': {Economy: 0.1, Military: 0.05, Wall: 0.0}, 'action_move_coordinates': {'x': 17.178742296106446, 'y': 24.073642806206504, 'count': 564}, 'action_unit_coordinates': {'x': 0.0, 'y': 0.0, 'count': 0}}}}`. The key is a specific timestamp, the subkeys store the average amount of units/action location for this timestamp. Count is required for the coordinate calculations since all coordinates are added and later divided by their number of frequency.
+
+In order to calculate the average research time of technologies and effective actions per minute (i.e. moving units, attacking), a similar approach is utlised. The average research time for all players is stored. In the end, the total resarch time is divided by the number of players who have research the technology: `{'eapm': {'pro': 45.921025117599676, 'high': 44.40773592782665, 'middle': 29.72721939895853, 'low': 16.29198645698805}, 'technologies': {'pro': {Economy: {Loom: 367.25, Feudal Age: 463.6, Double Bit Axe: 639.8421052631579}}}`. 
+
+All relevant averaging calculations happen in `analysis.MultipleAnalysis.compute_average_results_for_type()`. The data points are then visualised in the graphs.
 ### Supported Visualisations
-* average eAPM
-* average villagers queued over the course of a game with average age up times
-* average villagers queued over the course of a game with key economy research
-* average military units queued over the course of a game with key military research
-* average military buildings built over the course of a game
-* average pallisade walls built over the course of a game
-* average occurence of attacking actions in game
-* average distance of moving actions from starting position
-* average distance of attacking actions (i.e., formation, attacking or patrol) from starting position
+* Average eAPM
+* Average villagers queued over the course of a game with average age up times
+* Average villagers queued over the course of a game with key economy research
+* Average military units queued over the course of a game with key military research
+* Average military buildings built over the course of a game
+* Average pallisade walls built over the course of a game
+* Average occurence of attacking actions in game
+* Average distance of moving actions from starting position
+* Average distance of attacking actions (i.e., formation, attacking or patrol) from starting position
 ### Implemented CSV Content
 * Military count for all timestamps
 * Villager count for all timestamps

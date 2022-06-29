@@ -9,6 +9,13 @@ class AoEGraphs():
     """This class handles the visualisation of analysis results. It relies on helper classes from units.* to not rely on hardcoded values.
     """
     def __init__(self, average_timestamp_analysis_results: typing.Dict[SkillLevel, typing.Dict[int, typing.Dict[FilterType, typing.Dict[MainType, int]]]], average_results: typing.Dict[FilterType, typing.Dict[SkillLevel, any]]):
+        """Constructor
+
+        Args:
+            average_timestamp_analysis_results (typing.Dict[SkillLevel, typing.Dict[int, typing.Dict[FilterType, typing.Dict[MainType, int]]]]): All the analysis results, example structure:
+             {'low': {120: {'units': {Economy: 4.8, Military: 0.05}, 'buildings': {Economy: 0.1, Military: 0.05, Wall: 0.0}, 'action_move_coordinates': {'x': 17.178742296106446, 'y': 24.073642806206504, 'count': 564}, 'action_unit_coordinates': {'x': 0.0, 'y': 0.0, 'count': 0}}}}
+            average_results (typing.Dict[FilterType, typing.Dict[SkillLevel, any]]): holds eAPM and average technology research times for all players, e.g. {'eapm': {'pro': 45.921025117599676, 'high': 44.40773592782665, 'middle': 29.72721939895853, 'low': 16.29198645698805}, 'technologies': {'pro': {Economy: {Loom: 367.25, Feudal Age: 463.6, Double Bit Axe: 639.8421052631579}}}
+        """
         self.average_timestamp_analysis_results = average_timestamp_analysis_results
         self.average_results = average_results
 
