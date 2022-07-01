@@ -10,8 +10,13 @@ It also generates CSV files for each replay file calculated for each player. Thi
 
 The replays are added to `ez-aoe-details/replays`. The current replays have been taken from aoe2.net and all feature games played as 1v1 on Arabia. Graphs generated with the given replay files can be found in `ez-aoe-details/graphs`.
 
-It aims at understanding how player behaviour varies based on skill level, for me a more thourough explanation, see [the project Summary](SUMMARY.md).
-
+It aims to understand how player behaviour varies based on skill level, for me a more thourough explanation, see [the project Summary](SUMMARY.md).
+## Installation
+* `pip3 install pandas`
+* `pip3 install matplotlib`
+* `pip3 install git+https://github.com/happyleavesaoc/aoc-mgz.git@fix-fast`
+## Execution
+`python3 ez-aoe-details/analysis.py`
 ## Data Structure
 Data is passed as dictionary through the different classes. All player relevant data is stored in a `player.Player` instance. The players are held in their respective `analysis.Analysis` classes which are again part of `analysis.MultipleAnalyses`. 
 
@@ -32,7 +37,7 @@ All relevant averaging calculations happen in `analysis.MultipleAnalyses.compute
 * Average occurence of attacking actions in game
 * Average distance of moving actions from starting position
 * Average distance of attacking actions (i.e., formation, attacking or patrol) from starting position
-### Implemented CSV Content
+## Implemented CSV Content
 * Military count for all timestamps
 * Villager count for all timestamps
 * Technology research time
@@ -41,17 +46,14 @@ All relevant averaging calculations happen in `analysis.MultipleAnalyses.compute
 The calculations are done for each player.
 
 The generated CSV files are added to output/timestamp/REPLAY_FILE.
-### Usage of Parser
+## Usage of Parser
 The parser can be used with any replay files from the game Age of Empires II DE.
+## Customisation
+To customise the analysed replays, the main method in `ez-aoe-details/analysis.py` can be adapted. Notably, constants `SkillLevel.CUSTOM_A` and `SkillLevel.CUSTOM_B` have been added to facilicate this action. They can be used when referencing paths containing other replays:
+
+`analyses = MultipleAnalyses({SkillLevel.CUSTOM_A: file_path + '/custom_a', SkillLevel.CUSTOM_B: file_path + '/custom_b'})`
 ### Visualisation Modifications
 To amend the visualisations, file `visualisation.py` needs to be modified. In particular: Below the comment `# set relevant technologies`.
-## Installation
-* `pip3 install pandas`
-* `pip3 install matplotlib`
-* `pip3 install git+https://github.com/happyleavesaoc/aoc-mgz.git@fix-fast`
-
-## Execution
-`python3 ez-aoe-details/analysis.py`
 ## How does this tool help other players?
 Players are able to understand their own actions in game by analaysing their replay files. In particular, the tool enables them to understand their weak points. 
 ## Outline - Possible Extensions

@@ -187,6 +187,8 @@ class SkillLevel():
     HIGH = 'high' # ELO > 1800
     MIDDLE = 'middle' # ELO > 1000
     LOW = 'low' # ELO <= 1000
+    CUSTOM_A = 'A' # for custom comparisons
+    CUSTOM_B = 'B' # for custom comparisons
 
 UNIT_IDS = {
     MainType.ECO: {

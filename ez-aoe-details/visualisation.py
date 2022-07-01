@@ -73,7 +73,8 @@ class AoEGraphs():
             for entries in entry.values():
                 entries.extend([None] * (timestamps_length - len(entries)))
 
-        type_colors = {SkillLevel.PRO: 'blue', SkillLevel.HIGH: 'orange', SkillLevel.MIDDLE: 'green', SkillLevel.LOW: 'red'}
+        type_colors = {SkillLevel.PRO: 'blue', SkillLevel.HIGH: 'orange', SkillLevel.MIDDLE: 'green', SkillLevel.LOW: 'red', SkillLevel.CUSTOM_A: 'cyan', SkillLevel.CUSTOM_B: 'brown'}
+        type_colors = {type : color for type, color, in type_colors.items() if type in vil_unit_values} # filter all skill level keys not part of the analysed data
 
         # Average Villager Count + Age Technologies
         self.generate_line_chart_with_technologies(vil_unit_values, timestamps, type_colors, eco_age_values, 1, 'Average Villager Count')
@@ -131,9 +132,9 @@ class AoEGraphs():
 
         lines = []
         for l in linestyles:
-            lines.append(Line2D([0,1],[0,1],linestyle=l, color='0.8'))
+            lines.append(Line2D([0,1],[0,1], linestyle=l, color='0.8'))
         technology_list = []
-        max_key = max(values, key = lambda k: list(filter(None.__ne__, k[1])))
+        max_key = max(values, key = lambda k: list(filter(None.__ne__, k)))
         max_value_avg = max(list(filter(None.__ne__, values[max_key]))) / 1.5
 
         for type, technologies in technologies.items():
@@ -141,7 +142,7 @@ class AoEGraphs():
             for technology, timestamp in technologies.items():
                 if index > len(linestyles) - 1:
                     index = 0
-                line = plt.vlines(x=timestamp, ymin=0, ymax=max_value_avg, colors=colors[type], ls=linestyles[index], lw=1, label='')
+                plt.vlines(x=timestamp, ymin=0, ymax=max_value_avg, colors=colors[type], ls=linestyles[index], lw=1, label='')
                 if technology not in technology_list:
                     technology_list.append(technology)
                 index += 1
