@@ -1,4 +1,4 @@
-# Description
+# Problem Description
 
 In Real Time Strategy (RTS) games players are placed on a map to gather resources, build units and attack their opponent. To achieve this as efficiently as possible, certain strategies are followed.
 
@@ -17,7 +17,7 @@ Research for the RTS game StarCraft II by Kuan et al. (2017) [[4]](#4) has shown
 
 Visualisation of AoE II DE replay data theoretically could be a very powerful tool to help players understand why games play out in a certain manner, as showcased by Kuan et al. (2017) [[4]](#4). Currently, there are a lot of unknowns regarding game play data, especially regarding comparisons in between replay files. Another unknown detail is which data sets should be highlighted to enable the best possible learning effect [[3]](#3).
 
-The goal of this project is to visualise AoE II DE replay data in a comprehensible manner and make it comparable to other replay files. This would enable a straight-forward comparison of different skill levels. This includes - for example - average villager and building count over the course of games.
+The goal of this project is to visualise AoE II DE replay data in a comprehensible manner and make it comparable to other replay files. This enables a straight-forward comparison of different skill levels. This includes - for example - average villager and building count over the course of games.
 
 ## References
 <a id="1">[1]</a>
