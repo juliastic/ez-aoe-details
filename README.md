@@ -14,6 +14,7 @@ It aims to understand how player behaviour varies based on skill level, for me a
 ## How does this tool help other players?
 Players are able to understand their own actions in game by analaysing their replay files. In particular, the tool enables them to understand their weak points.
 ## Installation
+* `git clone https://github.com/juliastic/ez-aoe-details.git`
 * `pip3 install pandas`
 * `pip3 install matplotlib`
 * `pip3 install git+https://github.com/happyleavesaoc/aoc-mgz.git@fix-fast`
@@ -22,14 +23,22 @@ Players are able to understand their own actions in game by analaysing their rep
 ## Data Structure
 Data is passed as dictionary through the different classes. All player relevant data is stored in a `player.Player` instance. The players are held in their respective `analysis.Analysis` classes which are again part of `analysis.MultipleAnalyses`. All project relevant constants are stored in `units.py`, i.e., technologies, units and buildings. The data is visualised in `visualisation.AoEGraphs`.
 
-The replay files are parsed seperately in `analysis.Analysis` and the actions are added to their players. In `player.Player`, the relevant data for every timestamp is calculated and stored: `{0: {'units': {Economy: 0, Military: 0}, 'buildings: {Economy: 0, Military: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}}}`.
+The replay files are parsed seperately in `analysis.Analysis` and the actions are added to their players. This is done by checking the ID of the action and handling it accordingly, For example, in case of a unit queue, the unit ID is parsed. In `player.Player`, the data is matched with its name and stored accordingly. Every two minutes, the data is calculated and stored in a dictionary entry:
 
-After all analyses have been concluded, the data from all players from the same skill levels are averaged and a dictionary with relevant calculations is created in `analysis.MultipleAnalyses`: ` {'low': {120: {'units': {Economy: 4.8, Military: 0.05}, 'buildings': {Economy: 0.1, Military: 0.05, Wall: 0.0}, 'action_move_coordinates': {'x': 17.178742296106446, 'y': 24.073642806206504, 'count': 564}, 'action_unit_coordinates': {'x': 0.0, 'y': 0.0, 'count': 0}}}}`. The key is a specific timestamp, the subkeys store the average amount of units/action location for this timestamp. Count is required for the coordinate calculations since all coordinates are added and later divided by their number of occurence (key `count`).
+`{0: {'units': {Economy: 0, Military: 0}, 'buildings: {Economy: 0, Military: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}}}`.
 
-In order to calculate the average research time of technologies and effective actions per minute (i.e., moving units, attacking), a similar approach is utlised. The average research time for all players is stored. In the end, the total resarch time is divided by the number of players who have research the technology: `{'eapm': {'pro': 45.921025117599676, 'high': 44.40773592782665, 'middle': 29.72721939895853, 'low': 16.29198645698805}, 'technologies': {'pro': {Economy: {Loom: 367.25, Feudal Age: 463.6, Double Bit Axe: 639.8421052631579}}}`. 
+After all analyses have been concluded, the data from all players from the same skill levels are averaged and a dictionary with relevant calculations is created in `analysis.MultipleAnalyses`: 
+
+` {'low': {120: {'units': {Economy: 4.8, Military: 0.05}, 'buildings': {Economy: 0.1, Military: 0.05, Wall: 0.0}, 'action_move_coordinates': {'x': 17.178742296106446, 'y': 24.073642806206504, 'count': 564}, 'action_unit_coordinates': {'x': 0.0, 'y': 0.0, 'count': 0}}}}`. 
+
+The key is a specific timestamp, the subkeys store the average amount of TOTAL created units/buildings up to the timestamp and the action location between the last timestamp and the current one timestamp. `Count` is required for the coordinate calculations since all coordinates are added and later divided by their number of occurence (key `count`).
+
+In order to calculate the average research time of technologies and effective actions per minute (i.e., moving units, attacking), a similar approach is utlised. The average research time for all players is stored in seconds. In the end, the total resarch time is divided by the number of players who have researched the technology: 
+
+`{'eapm': {'pro': 45.921025117599676, 'high': 44.40773592782665, 'middle': 29.72721939895853, 'low': 16.29198645698805}, 'technologies': {'pro': {Economy: {Loom: 367.25, Feudal Age: 463.6, Double Bit Axe: 639.8421052631579}}}`. 
 
 All relevant averaging calculations happen in `analysis.MultipleAnalyses.compute_average_results_for_type()`. The data points are then visualised in the graphs.
-### Supported Visualisations
+## Supported Visualisations
 * Average eAPM
 * Average villagers queued over the course of a game with average age up times
 * Average villagers queued over the course of a game with key economy research
