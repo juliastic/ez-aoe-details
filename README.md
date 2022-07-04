@@ -20,7 +20,7 @@ Players are able to understand their own actions in game by analaysing their rep
 ## Execution
 `python3 ez-aoe-details/analysis.py`
 ## Data Structure
-Data is passed as dictionary through the different classes. All player relevant data is stored in a `player.Player` instance. The players are held in their respective `analysis.Analysis` classes which are again part of `analysis.MultipleAnalyses`. 
+Data is passed as dictionary through the different classes. All player relevant data is stored in a `player.Player` instance. The players are held in their respective `analysis.Analysis` classes which are again part of `analysis.MultipleAnalyses`. All project relevant constants are stored in `units.py`, i.e., technologies, units and buildings. The data is visualised in `visualisation.AoEGraphs`.
 
 The replay files are parsed seperately in `analysis.Analysis` and the actions are added to their players. In `player.Player`, the relevant data for every timestamp is calculated and stored: `{0: {'units': {Economy: 0, Military: 0}, 'buildings: {Economy: 0, Military: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}, 'action_move_coordinates': {'x': 0, 'y': 0, count: 0}}}`.
 
@@ -47,15 +47,18 @@ All relevant averaging calculations happen in `analysis.MultipleAnalyses.compute
 
 The calculations are done for each player.
 
-The generated CSV files are added to output/timestamp/REPLAY_FILE.
+The generated CSV files are added to `output/timestamp/REPLAY_FILE`.
 ## Usage of Parser
 The parser can be used with any replay files from the game Age of Empires II DE.
 ## Customisation
+### General
 To customise the analysed replays, the main method in `ez-aoe-details/analysis.py` can be adapted. Notably, constants `SkillLevel.CUSTOM_A` and `SkillLevel.CUSTOM_B` have been added to facilicate this action. They can be used when referencing paths containing other replays:
 
 `analyses = MultipleAnalyses({SkillLevel.CUSTOM_A: file_path + '/custom_a', SkillLevel.CUSTOM_B: file_path + '/custom_b'})`
 ### Visualisation Modifications
-To amend the visualisations, file `visualisation.py` needs to be modified. In particular: Below the comment `# set relevant technologies`.
+To amend the visualisations, file `visualisation.py` needs to be modified. Modification of displayed technologies can be easily changed by amending the technologies below comment `# set relevant technologies`. For an overview of currently implemented technologies see also `units.Technology`.
 ## Outline - Possible Extensions
 * Abstract visualsations to enable easier reuse, i.e., enable users to decide which technologies to visualise
+* Add missing IDs: Not all unit and technology IDs have been added as they were not relevant for the selected replay files
+* Extend CSV implementation
 * Add pip package support
